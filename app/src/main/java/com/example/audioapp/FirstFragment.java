@@ -40,8 +40,6 @@ import com.example.audioapp.entity.SensorData;
 import com.example.audioapp.utils.AudioRecorder;
 import com.example.audioapp.utils.FileUtil;
 
-// [REMOVED] All org.supercsv imports are gone
-
 import android.provider.MediaStore;
 import android.content.ContentValues;
 import android.net.Uri;
@@ -49,7 +47,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 
 import java.io.File;
-import java.io.FileWriter; // [ADDED] Import standard FileWriter
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -58,28 +56,21 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-//@RequiresApi(api = Build.VERSION_CODES.KITKAT)
 public class FirstFragment extends Fragment {
-    //Motion
     private TextView motionText = null;
 
-    //Acceleration sensor: TYPE_ACCELEROMETER: include gravity
     private SensorManager mSensorManager;
     private TextView mSensorText = null;
     private Sensor mSensor;
     private SensorData mData = new SensorData();
 
-    //Gyroscope sensor: TYPE_GYROSCOPE
     private SensorManager mSensorManager2;
     private Sensor mSensor2;
 
-    //CSV file to store data from accelerator and gyroscope
     private String[] HEADER = new String[]{"Time", "X-acc", "Y-acc", "Z-acc", "Accuracy", "X-Rot", "Y-Rot", "Z-Rot"};
 
-    // [CHANGED] Replaced ICsvMapWriter with standard Java FileWriter
     private FileWriter csvWriter = null;
 
-    //Recorder and player part
     private TextView phrases;
     private Button clickShow;
     private int phrase_type;
@@ -92,7 +83,6 @@ public class FirstFragment extends Fragment {
     int listIndex;
     int listLength;
 
-    //new members
     private Button button_camera;
     private ActivityResultLauncher<Uri> takePictureLauncher;
     private Uri imageUri;
@@ -134,14 +124,10 @@ public class FirstFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //motion
-        //setOnTouchListener(new myOnTouchListener());
 
-        //Acceleration sensor
         mSensorManager = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        //Gyroscope sensor
         mSensorManager2 = (SensorManager) getActivity().getSystemService(Context.SENSOR_SERVICE);
         mSensor2 = mSensorManager2.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         mSensorManager.registerListener(mListener, mSensor, 50000);
@@ -164,7 +150,7 @@ public class FirstFragment extends Fragment {
         Log.d("sensor", "sensor destroyed");
         mSensorManager.unregisterListener(mListener);
         mSensorManager2.unregisterListener(mListener2);
-        closeCSVWriter(); // [ADDED] Ensure writer is closed when fragment is destroyed
+        closeCSVWriter();
     }
 
     @Override
@@ -188,16 +174,13 @@ public class FirstFragment extends Fragment {
         if (null != mSensorText) {
             mSensorText.setText(mData.getText());
             try {
-                writeWithCsvBeanWriter(); // This name is kept from original, but it now uses the new method
+                writeWithCsvBeanWriter();
             } catch (Exception exception) {
                 Log.e("FirstFragment_CSV", "Error in updateSensorStateText", exception);
             }
         }
     }
 
-    // [REMOVED] The getProcessors() method is no longer needed and has been deleted.
-
-    // [CHANGED] Rewritten to use standard FileWriter
     private void initCSVFile(String fileName) {
         try {
             File file = new File(fileName);
@@ -223,10 +206,9 @@ public class FirstFragment extends Fragment {
         }
     }
 
-    // [CHANGED] Rewritten to use standard FileWriter
     private void writeWithCsvBeanWriter() throws Exception {
         if (csvWriter == null) {
-            return; // File not initialized, skip writing
+            return;
         }
 
         SimpleDateFormat formater = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
@@ -245,13 +227,12 @@ public class FirstFragment extends Fragment {
         csvWriter.write(rowBuilder.toString());
     }
 
-    // [CHANGED] Rewritten to use standard FileWriter
     private void closeCSVWriter() {
         if (csvWriter != null) {
             try {
                 csvWriter.flush();
                 csvWriter.close();
-                csvWriter = null; // Set to null after closing
+                csvWriter = null;
             } catch (IOException e) {
                 Log.e("FirstFragment_CSV", "Error closing CSV writer", e);
             }
@@ -283,7 +264,7 @@ public class FirstFragment extends Fragment {
         pause2.setEnabled(false);
         next = view.findViewById(R.id.next);
         previous = view.findViewById(R.id.previous);
-        mvideo.getHolder().setKeepScreenOn(true);//keep screen lighting
+        mvideo.getHolder().setKeepScreenOn(true);
         musiclist = FileUtil.getWavFilesStrings();
         listIndex = 0;
         listLength = musiclist.length;
@@ -455,7 +436,6 @@ public class FirstFragment extends Fragment {
         });
 
         start.setOnClickListener(new View.OnClickListener() {
-            //            @RequiresApi(api = Build.VERSION_CODES.KITKAT)
             @Override
             public void onClick(View view) {
                 Log.d("encheck", "onclick: " + mAudioRecorder.getStatus());
@@ -480,7 +460,6 @@ public class FirstFragment extends Fragment {
                         closeCSVWriter();
                         start.setText("Start Recording");
                         pause.setText("Pause Recording");
-//                        pause.setVisibility(View.GONE);
                         Log.d("encheck", "stop2: " + mAudioRecorder.getStatus());
                     }
                 } catch (IllegalStateException e) {
@@ -528,13 +507,11 @@ public class FirstFragment extends Fragment {
                     if (mAudioRecorder.getStatus() == AudioRecorder.Status.STATUS_START) {
                         //pause
                         mAudioRecorder.pauseRecord();
-//                        pause.setText(" keep recording ");
                         pause.setText("Keep Recording");
                         Log.d("encheck", "after pause: " + mAudioRecorder.getStatus());
                     } else {
                         Log.d("encheck", "click keep: " + mAudioRecorder.getStatus());
                         mAudioRecorder.startRecord(null);
-//                        pause.setText(" pause ");
                         pause.setText("Pause Recording");
                         Log.d("encheck", "after keep: " + mAudioRecorder.getStatus());
                     }
@@ -546,8 +523,6 @@ public class FirstFragment extends Fragment {
 
         verifyPermissions(getActivity());
     }
-
-    //get the permission of recording
 
     private static final int GET_RECODE_AUDIO = 1;
 
@@ -572,10 +547,7 @@ public class FirstFragment extends Fragment {
         }
     }
 
-    /**
-     * Initializes the ActivityResultLauncher for taking a picture.
-     * This registers a callback for when the camera app returns a result.
-     */
+
     private void initializeCameraLauncher() {
         takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), isSuccess -> {
             if (isSuccess) {
@@ -590,11 +562,7 @@ public class FirstFragment extends Fragment {
         });
     }
 
-    /**
-     * Creates a new image file in the public Pictures gallery and launches the camera.
-     */
     private void launchCamera() {
-        // Create a file in the public Pictures directory
         String fileName = "HCI_Project_" + System.currentTimeMillis() + ".jpg";
 
         ContentValues values = new ContentValues();
@@ -605,14 +573,12 @@ public class FirstFragment extends Fragment {
         // This saves the image to the "Pictures/HCI_Project" folder
         values.put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/HCI_Project");
 
-        // Get the URI for the new image
         imageUri = getContext().getContentResolver().insert(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 values
         );
 
         if (imageUri != null) {
-            // Launch the camera app, passing it the URI to save the photo
             takePictureLauncher.launch(imageUri);
         } else {
             Toast.makeText(getContext(), "Failed to create image file", Toast.LENGTH_SHORT).show();

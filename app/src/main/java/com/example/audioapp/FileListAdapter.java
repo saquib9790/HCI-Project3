@@ -11,9 +11,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.List;
 
-/**
- * Created by HXL on 16/3/14.
- */
+
 public class FileListAdapter extends BaseAdapter {
     Context context;
     List<File> list;

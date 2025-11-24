@@ -1,7 +1,6 @@
 package com.example.audioapp.entity;
 
 public class SensorData {
-    //Acceleration
     private float x;
     private float y;
     private float z;
@@ -35,7 +34,6 @@ public class SensorData {
         this.accuracy = accuracy;
     }
 
-    //Gyroscope
     private float rotx;
     private float roty;
     private float rotz;
